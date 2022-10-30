@@ -1,11 +1,18 @@
 import { writable, type Writable, derived, get } from 'svelte/store';
+
+export interface Sveet {
+  sveet: Map<string, SveetCell>
+  numberOfRows: number
+  numberOfColumns: number
+}
+
 export function createSveet({
   numberOfRows,
   numberOfColumns
 }: {
   numberOfRows: number;
   numberOfColumns: number;
-}) {
+  }): Sveet {
   const sveet = new Map<string, SveetCell>();
   for (let r = 0; r < numberOfRows; r++) {
     for (let c = 0; c < numberOfColumns; c++) {
@@ -15,7 +22,11 @@ export function createSveet({
       sveet.set(columnName + rowIndex, cell);
     }
   }
-  return sveet;
+  return {
+    sveet,
+    numberOfRows,
+    numberOfColumns,
+  };
 }
 
 export interface SveetCell {
@@ -87,7 +98,7 @@ function createSveetCell({
             }
           }
         } else {
-          formula.set(lastSavedFormulaValue);
+          formula.set(formulaValue = lastSavedFormulaValue);
         }
       }
     }
@@ -128,9 +139,22 @@ function createDerivedDisplayValueStore(formulaValue: string, sveet: Map<string,
   return derivedStore;
 }
 
+const A_CHARCODE = 'A'.charCodeAt(0)
+
 export function getColumnName(column: number) {
-  return String.fromCharCode('A'.charCodeAt(0) + column);
+  return String.fromCharCode(A_CHARCODE + column);
 }
 export function getRowIndex(row: number) {
   return row + 1;
+}
+
+export function fromColumnName(column: string): number {
+  let result = 0;
+  for (let i = column.length - 1, base = 1; i >= 0; i--, base *= 26) {
+    result += (column.charCodeAt(i) - A_CHARCODE) * base;
+  }
+  return result
+}
+export function fromRowIndex(row: string) {
+  return parseInt(row, 10) - 1
 }

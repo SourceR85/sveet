@@ -1,25 +1,22 @@
 <script lang="ts">
-	import { tick } from 'svelte';
-
+	import { getContext, tick } from 'svelte';
+	import type { CurrentSveetContext, ActiveCell } from "./types";
 	import Cell from './Cell.svelte';
 	import ColHeader from './ColHeader.svelte';
 	import RowHeader from './RowHeader.svelte';
-	import { getColumnName, getRowIndex, createSveet } from './sveet';
-	let numberOfColumns = 26;
-	let numberOfRows = 50;
+	import { getColumnName, getRowIndex, type SveetCell } from './sveet';
 
 	const rowHeaders: HTMLElement[] = [];
 	const columnHeaders: HTMLElement[] = [];
-
-	const sveet = createSveet({ numberOfColumns, numberOfRows });
-	type ActiveCell = {
-		column: number;
-		row: number;
-	};
-	let activeCell: ActiveCell = {
-		column: 0,
-		row: 0
-	};
+	
+	const {
+		activeCell,
+		current_sveet: {
+			sveet,
+			numberOfRows,
+			numberOfColumns,
+		}
+	} = getContext<CurrentSveetContext>("sveet")
 
 	const keyDownToDelta = {
 		ArrowUp: { rowDirection: -1 },
@@ -39,14 +36,14 @@
 				event.preventDefault();
 				break;
 			case 'Delete':
-				const columnName = getColumnName(activeCell.column);
-				const rowIndex = getRowIndex(activeCell.row);
+				const columnName = getColumnName($activeCell.column);
+				const rowIndex = getRowIndex($activeCell.row);
 				const cell = sveet.get(columnName + rowIndex);
 				if(cell) {
 					cell.formula.set("")
 					cell.displayValue.set("")
 				};
-			break
+			break;
 			default:
 				if(event.key !== 'Enter' && event.key.length > 1) return;
 				const activeCellElement = document.querySelector("main div.active")
@@ -62,19 +59,19 @@
 	) {
 		if (allTheWay) {
 			if (rowDirection === -1) {
-				activeCell.row = 0;
+				$activeCell.row = 0;
 			} else if (rowDirection === 1) {
-				activeCell.row = numberOfRows - 1;
+				$activeCell.row = numberOfRows - 1;
 			}
 			if (columnDirection === -1) {
-				activeCell.column = 0;
+				$activeCell.column = 0;
 			} else if (columnDirection === 1) {
-				activeCell.column = numberOfColumns - 1;
+				$activeCell.column = numberOfColumns - 1;
 			}
 		} else {
-			activeCell.row = Math.max(Math.min(activeCell.row + rowDirection, numberOfRows - 1), 0);
-			activeCell.column = Math.max(
-				Math.min(activeCell.column + columnDirection, numberOfColumns - 1),
+			$activeCell.row = Math.max(Math.min($activeCell.row + rowDirection, numberOfRows - 1), 0);
+			$activeCell.column = Math.max(
+				Math.min($activeCell.column + columnDirection, numberOfColumns - 1),
 				0
 			);
 		}
@@ -131,11 +128,16 @@
 	function waitForBindingForColumnRowHeadersToFinish() {
 		return tick();
 	}
+	function getCell(cellName: string): SveetCell {
+		const cell = sveet.get(cellName)
+		if(!cell) throw `Cell ${cellName} not found`
+		return cell
+	}
 </script>
 
 <svelte:body on:keydown={onKeydown} />
 
-<main use:scrollIntoView={activeCell} style:--rows={numberOfRows} style:--columns={numberOfColumns}>
+<main use:scrollIntoView={$activeCell} style:--rows={numberOfRows} style:--columns={numberOfColumns}>
 	<div>
 		<span class="select-table"></span>
 
@@ -144,13 +146,15 @@
 			{#each { length: numberOfRows } as _, row}
 				{@const rowIndex = getRowIndex(row)}
 				{@const cellName = colName + rowIndex}
+				{@const cell = getCell(cellName)}
 				<Cell
-					cell={sveet.get(cellName)}
+					{cell}
 					{row}
 					{column}
-					active={activeCell?.column === column && activeCell?.row === row}
+					active={$activeCell?.column === column && $activeCell?.row === row}
 					on:select={() => {
-						activeCell = { column, row };
+						$activeCell.column =column;
+						$activeCell.row =row;
 					}}
 				/>
 			{/each}
@@ -160,7 +164,7 @@
 			{@const colName = String.fromCharCode('A'.charCodeAt(0) + column)}
 			<ColHeader
 				bind:element={columnHeaders[column]}
-				active={activeCell?.column === column}
+				active={$activeCell?.column === column}
 				{column}
 				value={colName}
 			/>
@@ -170,7 +174,7 @@
 			{@const rowIndex = String(row + 1)}
 			<RowHeader
 				bind:element={rowHeaders[row]}
-				active={activeCell?.row === row}
+				active={$activeCell?.row === row}
 				{row}
 				value={rowIndex}
 			/>
@@ -186,7 +190,7 @@
 	}
 	div {
 		display: grid;
-		grid-template-rows: repeat(calc(var(--rows) + 1), 20px);
+		grid-template-rows: repeat(calc(var(--rows) + 1), 23px);
 		grid-template-columns: repeat(calc(var(--columns) + 1), minmax(50px, 1fr));
 	}
 	.select-table {

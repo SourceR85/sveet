@@ -36,6 +36,7 @@
 	style:--row={row}
 	style:--column={column}
 	class:active
+	on:keydown={null}
 	on:click={() => dispatch('select')}
 	on:dblclick={() => {
 		if (mode === Mode.DisplayValue) {
@@ -76,12 +77,14 @@
 		grid-column: calc(var(--column) + 2);
 	}
 	.active {
-		outline-color: blueviolet;
+		outline-color: var(--active-input-outline);
 		outline-width: 2px;
 	}
 	input {
 		all: unset;
 		display: block;
+		height: 23px;
+		line-height: 23px;
 		width: 100%;
 	}
 </style>

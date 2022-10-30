@@ -5,6 +5,7 @@ import undoIcon from '@fluentui/svg-icons/icons/arrow_undo_16_regular.svg'
 import redoIcon from '@fluentui/svg-icons/icons/arrow_redo_16_regular.svg'
 import cutIcon from '@fluentui/svg-icons/icons/cut_20_regular.svg'
 import copyIcon from '@fluentui/svg-icons/icons/copy_20_regular.svg'
+import { noop } from "../utils"
 
 interface BaseMenu {
 	label: string
@@ -21,10 +22,6 @@ export interface Menu extends BaseMenu {
 	icon?: string
 	keyboardShortcut?: string
 	children?: (Menu | MenuItem)[]
-}
-
-function noop() {
-	console.warn("not implemented")
 }
 
 function colorScheme(mode: "dark" | "light") {

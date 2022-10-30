@@ -1,21 +1,14 @@
 <script lang="ts">
 	import more from '@fluentui/svg-icons/icons/caret_right_16_regular.svg';
-	import { children } from 'svelte/internal';
-	export let menuChild;
-	let menuCurrentlyShowing: string = null;
+	import type { Menu, MenuItem } from "./menu";
+	export let menuChild: (Menu & MenuItem)[];
 </script>
 
 <menu>
 	{#each menuChild as { label, children, icon, action }}
 		<li
-			on:mouseenter={() => {
-				menuCurrentlyShowing = label;
-			}}
-			on:click={() => {
-				if(typeof action == "function") {
-					action()
-				}
-			}}
+			on:keydown={null}
+			on:click={action ? () => action() : null}
 		>
 			{#if icon}
 				<div style:-webkit-mask-image="url({icon})" />
@@ -53,12 +46,12 @@
 		grid-template-areas: 'icon . .';
 		grid-template-columns: 1rem auto 1rem;
 		grid-auto-flow: column;
-		min-width: 8em;
+		min-width: 8.5em;
 		padding: 0.25em;
 		position: relative;
 	}
 	li:hover {
-		background-color: #0003;
+		background-color: var(--hover-color);
 	}
 	li:hover > :global(menu) {
 		display: block;

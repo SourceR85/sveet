@@ -1,12 +1,11 @@
 <script lang="ts">
 	import Dropdown from './Dropdown.svelte';
 	import { menu as menuData } from './menu';
-	import type { Menu, MenuItem } from './menu';
+	import { noop } from "../utils";
 
 	let showDropdownMode = false;
-	let menuCurrentlyShowing: string = null;
+	let menuCurrentlyShowing: string|null = null;
 
-	const noop = () => {};
 	const hideMenu = () => {
 		if (menuCurrentlyShowing) {
 			showDropdownMode = false;
@@ -17,9 +16,10 @@
 
 <svelte:body on:click={hideMenu} />
 
-<menu on:click|stopPropagation={noop}>
+<menu on:click|stopPropagation={noop} on:keydown={null}>
 	{#each menuData as { label, children }}
 		<li
+			on:keydown={null}
 			on:click={() => {
 				showDropdownMode = true;
 				menuCurrentlyShowing = label;
@@ -45,6 +45,7 @@
 		height: 1.5rem;
 		justify-content: start;
 		padding-inline: 0.25rem;
+		border-bottom: 1px solid var(--border-color);
 	}
 	menu,
 	menu :global(menu) {
@@ -61,6 +62,6 @@
 		position: relative;
 	}
 	li:hover {
-		background-color: #0003;
+		background-color: var(--hover-color);
 	}
 </style>
