@@ -38,6 +38,21 @@
 				moveActiveCell(keyDownToDelta[event.key], { allTheWay: controlPressed });
 				event.preventDefault();
 				break;
+			case 'Delete':
+				const columnName = getColumnName(activeCell.column);
+				const rowIndex = getRowIndex(activeCell.row);
+				const cell = sveet.get(columnName + rowIndex);
+				if(cell) {
+					cell.formula.set("")
+					cell.displayValue.set("")
+				};
+			break
+			default:
+				if(event.key !== 'Enter' && event.key.length > 1) return;
+				const activeCellElement = document.querySelector("main div.active")
+				if(activeCellElement) {
+					activeCellElement.dispatchEvent(new MouseEvent("dblclick"));
+				}
 		}
 	}
 

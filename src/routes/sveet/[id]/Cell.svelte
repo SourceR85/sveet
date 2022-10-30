@@ -20,10 +20,16 @@
 	let editValue = cell.formula;
 	let displayValue = cell.displayValue;
 
-	function finishEditing(save: boolean) {
+	function finishEditing(save: boolean, move?: "Up"|"Down"|"Left"|"Right") {
 		mode = Mode.DisplayValue;
 		editValue.stopEditing(save);
+		if(move) {
+			document.body.dispatchEvent(new KeyboardEvent("keydown", {
+				key: `Arrow${move}`
+			}))
+		}
 	}
+	const autofocus = (node: HTMLInputElement) => { node.focus() }
 </script>
 
 <div
@@ -43,14 +49,17 @@
 	{#if mode === Mode.DisplayValue}
 		{$displayValue}
 	{:else if mode === Mode.Editing}<input
-			autofocus
+			use:autofocus
 			bind:value={$editValue}
 			on:blur={() => finishEditing(true)}
 			on:keydown|stopPropagation={(event) => {
 				switch(event.key) {
 					case 'Enter':
-						finishEditing(true);
+						finishEditing(true, event.shiftKey ? "Up" : "Down");
 						break;
+					case 'Tab':
+						finishEditing(true, event.shiftKey ? "Left" : "Right")
+						break
 					case 'Escape':
 						finishEditing(false);
 						break;
@@ -71,11 +80,8 @@
 		outline-width: 2px;
 	}
 	input {
+		all: unset;
+		display: block;
 		width: 100%;
-		height: 100%;
-		margin: 0;
-		border: 0;
-		outline: 0;
-		box-sizing: border-box;
 	}
 </style>
