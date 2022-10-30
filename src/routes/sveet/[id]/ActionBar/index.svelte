@@ -3,8 +3,8 @@ import {actions} from "./actions"
 </script>
 
 <menu>
-{#each actions as {label, icon, action}}
-	<li on:click={action} on:keydown={null}><img src={icon} alt={label}/></li>
+{#each actions as {icon, action}}
+	<li on:click={action} on:keydown={null}><div style:-webkit-mask-image="url({icon})"/></li>
 {/each}
 </menu>
 
@@ -20,9 +20,18 @@ import {actions} from "./actions"
 		justify-content: start;
 		padding: .25rem .5rem;
 	}
-	li {
+	div {
+		aspect-ratio: 1;
 		cursor: pointer;
+		background-color: CanvasText;
+		-webkit-mask-position: center;
+		mask-position: center;
+		-webkit-mask-repeat: no-repeat;
+		mask-repeat: no-repeat;
+		-webkit-mask-size: 1em;
+		mask-size: 1em;
 		padding: 2px;
+		width: 1em;
 	}
 	li:hover {
 		background-color: var(--hover-color);
