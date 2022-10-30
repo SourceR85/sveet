@@ -6,7 +6,7 @@ export function createSveet({
   numberOfRows: number;
   numberOfColumns: number;
 }) {
-  const sveet = new Map();
+  const sveet = new Map<string, SveetCell>();
   for (let r = 0; r < numberOfRows; r++) {
     for (let c = 0; c < numberOfColumns; c++) {
       const columnName = getColumnName(c);
@@ -21,7 +21,7 @@ export function createSveet({
 export interface SveetCell {
   row: number;
   column: number;
-  displayValue: Writable<string>;
+  displayValue: Writable<string | number>;
   formula: Writable<string> & {
     startEditing: () => void;
     stopEditing: (save: boolean) => void;
@@ -36,22 +36,25 @@ function createSveetCell({
   row: number;
   column: number;
   sveet: Map<string, SveetCell>;
-}) {
-  const displayValue = writable('');
-  let formulaValue = '';
+  }): SveetCell {
+  const displayValue: SveetCell["displayValue"] = writable("");
+  let formulaValue = "";
   let lastSavedFormulaValue: string;
   let cleanup: () => void;
-  const formula = writable(formulaValue);
+  const formula: Writable<string> = writable(formulaValue);
+
+  const set = (value: string) => {
+    formulaValue = value;
+    formula.set(value);
+  }
 
   return {
     row,
     column,
     displayValue,
     formula: {
-      set: (value: string) => {
-        formulaValue = value;
-        formula.set(value);
-      },
+      set,
+      update: (fn) => set(fn(formulaValue)),
       subscribe: formula.subscribe,
       startEditing() {
         console.log(`Start editing cell ${row},${column}`);
@@ -60,7 +63,7 @@ function createSveetCell({
       stopEditing(save: boolean) {
         console.log(`Stop editing cell ${row},${column}`);
         if (save) {
-          if (formulaValue.startsWith('=')) {
+          if (typeof formulaValue == "string" && formulaValue.startsWith('=')) {
             if (typeof cleanup === 'function') {
               cleanup();
             }
@@ -70,8 +73,18 @@ function createSveetCell({
               displayValue.set(newDisplayValue)
             );
           } else {
-            // normal cell value
-            displayValue.set(formulaValue);
+            try {
+              const asNum = parseFloat(formulaValue)
+              if (!isNaN(asNum)) {
+                // number cell value
+                displayValue.set(asNum);
+              } else {
+                displayValue.set(formulaValue)
+              }
+            } catch (e) {
+              // normal cell value
+              displayValue.set(formulaValue);
+            }
           }
         } else {
           formula.set(lastSavedFormulaValue);
@@ -105,7 +118,7 @@ function createDerivedDisplayValueStore(formulaValue: string, sveet: Map<string,
   // (sveet) => { with(sveet) { return E3 } }
 
   const fn = new Function('sveet', `with(sveet) { ${formulaValue.replace('=', 'return ')} }`);
-  const storesToSubscribe: Writable<string>[] = [];
+  const storesToSubscribe: SveetCell["displayValue"][] = [];
   let detecting = true;
   fn(obj);
   detecting = false;
