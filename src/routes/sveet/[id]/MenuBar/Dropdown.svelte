@@ -1,26 +1,30 @@
 <script lang="ts">
 	import more from '@fluentui/svg-icons/icons/caret_right_16_regular.svg';
 	import type { Menu, MenuItem } from "./menu";
-	export let menuChild: (Menu & MenuItem)[];
+	export let menuChild: (Divider & Menu & MenuItem)[];
 </script>
 
 <menu>
-	{#each menuChild as { label, children, icon, action }}
-		<li
-			on:keydown={null}
-			on:click={action ? () => action() : null}
-		>
-			{#if icon}
-				<div style:-webkit-mask-image="url({icon})" />
-			{:else}
-				<div />
-			{/if}
-			{label}
-			{#if children}
-				<div style:-webkit-mask-image="url({more})" />
-				<svelte:self menuChild={children} />
-			{/if}
-		</li>
+	{#each menuChild as { type, label, children, icon, action }}
+		{#if type == "divider"}
+			<hr/>
+		{:else}
+			<li
+				on:keydown={null}
+				on:click={action ? () => action() : null}
+			>
+				{#if icon}
+					<div style:-webkit-mask-image="url({icon})" />
+				{:else}
+					<div />
+				{/if}
+				{label}
+				{#if children}
+					<div style:-webkit-mask-image="url({more})" />
+					<svelte:self menuChild={children} />
+				{/if}
+			</li>
+		{/if}
 	{/each}
 </menu>
 
@@ -49,6 +53,7 @@
 		min-width: 8.5em;
 		padding: 0.25em;
 		position: relative;
+		white-space: nowrap;
 	}
 	li:hover {
 		background-color: var(--hover-color);
@@ -61,5 +66,9 @@
 		background-color: CanvasText;
 		-webkit-mask-size: cover;
 		mask-size: cover;
+	}
+	hr {
+		border: 1px solid var(--border-color);
+		margin-block: 2px;
 	}
 </style>
