@@ -6,14 +6,14 @@
 
 <header>
 	<MenuBar />
-	<ActionBar/>
-	<FormulaBar/>
+	<ActionBar />
+	<FormulaBar />
 </header>
 
 <style>
-  header {
-    grid-area: top-bar;
+	header {
+		grid-area: top-bar;
 		position: relative;
 		z-index: 2;
-  }
+	}
 </style>

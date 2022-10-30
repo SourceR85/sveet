@@ -10,8 +10,10 @@
 <style>
 	div {
 		background-color: lightgray;
+		color: #000;
 		grid-row: calc(var(--row) + 2);
 		grid-column: 1;
+		outline: 1px solid gray;
 		position: sticky;
 		left: 0;
 		text-align: center;

@@ -42,7 +42,6 @@
 		display: grid;
 		gap: 0.25rem;
 		grid-auto-flow: column;
-		height: 1.5rem;
 		justify-content: start;
 		padding-inline: 0.25rem;
 		border-bottom: 1px solid var(--border-color);

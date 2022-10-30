@@ -10,9 +10,11 @@
 <style>
 	div {
 		background-color: lightgray;
+		color: #000;
 		grid-row: 1;
 		grid-column: calc(var(--column) + 2);
 		position: sticky;
+		outline: 1px solid gray;
 		top: 0;
 		text-align: center;
 	}

@@ -84,13 +84,15 @@ interface BaseMenu {
 
 export interface MenuItem extends BaseMenu {
 	action?: CallableFunction
+	children?: (Divider | MenuItem)[]
 }
 
-interface Divider {
+export interface Divider {
 	type: 'divider'
 }
-export type Menu = Divider | BaseMenu & {
-	children?: (Divider | Menu | MenuItem)[]
+
+export type Menu = BaseMenu & {
+	children?: (Divider | MenuItem)[]
 }
 
 /*  

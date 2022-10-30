@@ -184,7 +184,6 @@
 
 <style>
 	main {
-		background-color: peachpuff;
 		grid-area: sheet;
 		overflow: scroll;
 	}

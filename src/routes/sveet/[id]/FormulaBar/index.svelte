@@ -39,9 +39,9 @@
 		bind:this={rangeInput}
 		on:change={onAddressChange}
 		/>
-	<i><img src={caret_down} alt={null} /></i>
+	<i style:-webkit-mask-image="url({caret_down})" />
 	<span class="separator" />
-	<i><img src={math_formula} alt={null} /></i>
+	<i style:-webkit-mask-image="url({math_formula})" />
 	<span class="separator" />
 	<input
 	class="formula"
@@ -74,12 +74,17 @@
 		justify-content: start;
 	}
 	i {
-		display: contents;
-	}
-	img {
+		aspect-ratio: 1;
 		cursor: pointer;
-		display: block;
-		margin: 2px;
+		background-color: CanvasText;
+		-webkit-mask-position: center;
+		mask-position: center;
+		-webkit-mask-repeat: no-repeat;
+		mask-repeat: no-repeat;
+		-webkit-mask-size: 1em;
+		mask-size: 1em;
+		padding: 2px;
+		width: 1em;
 	}
 	.separator {
 		background-color: var(--border-color);
@@ -90,6 +95,7 @@
 	input {
 		all: unset;
 		padding-inline: 4px;
+		color: CanvasText;
 	}
 	input:focus {
 		box-shadow: 0 0 3px inset var(--active-input-outline);

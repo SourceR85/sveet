@@ -1,14 +1,17 @@
 <script lang="ts">
 	import more from '@fluentui/svg-icons/icons/caret_right_16_regular.svg';
-	import type { Menu, MenuItem } from "./menu";
-	export let menuChild: (Divider & Menu & MenuItem)[];
+	import type { Divider, Menu } from "./menu";
+	export let menuChild: Exclude<Menu["children"], undefined>;
+
+	const isDivider = (child: typeof menuChild[0]): child is Divider => "type" in child && child.type === "divider"
 </script>
 
 <menu>
-	{#each menuChild as { type, label, children, icon, action }}
-		{#if type == "divider"}
+	{#each menuChild as child}
+		{#if isDivider(child)}
 			<hr/>
 		{:else}
+			{@const { label, children, icon, action } = child}
 			<li
 				on:keydown={null}
 				on:click={action ? () => action() : null}
@@ -36,6 +39,7 @@
 		box-shadow: 1px 2px 4px #0009;
 		left: var(--left-position, 0);
 		top: var(--top-position, 100%);
+		z-index: 2;
 	}
 	li :global(menu) {
 		display: none;

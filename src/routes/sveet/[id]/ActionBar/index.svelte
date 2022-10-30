@@ -13,9 +13,9 @@ import {actions} from "./actions"
 		all: unset;
 	}
 	menu {
-		background-color: white;
 		border-bottom: 1px solid var(--border-color);
 		display: grid;
+		gap: .2px;
 		grid-auto-flow: column;
 		justify-content: start;
 		padding: .25rem .5rem;
