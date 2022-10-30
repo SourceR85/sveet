@@ -137,6 +137,8 @@
 
 <main use:scrollIntoView={activeCell} style:--rows={numberOfRows} style:--columns={numberOfColumns}>
 	<div>
+		<span class="select-table"></span>
+
 		{#each { length: numberOfColumns } as _, column}
 			{@const colName = getColumnName(column)}
 			{#each { length: numberOfRows } as _, row}
@@ -186,5 +188,19 @@
 		display: grid;
 		grid-template-rows: repeat(calc(var(--rows) + 1), 20px);
 		grid-template-columns: repeat(calc(var(--columns) + 1), minmax(50px, 1fr));
+	}
+	.select-table {
+		box-sizing: border-box;
+		display: block;
+		background-color: lightgray;
+		border-width: 0 4px 4px 0;
+		border-style: solid;
+		border-color: DimGray;
+		grid-row: 1;
+		grid-column: 1;
+		position: sticky;
+		top: 0;
+		left: 0;
+		z-index: 1;
 	}
 </style>
